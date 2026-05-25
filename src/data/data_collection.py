@@ -42,9 +42,9 @@ def save_data(df : pd.DataFrame, filepath: str) -> None:
     
 
 def main():
-    data_filepath = r"D:\loan_mlops\data\raw\loan_data.csv"
+    data_filepath = r"D:\loan_mlops\data\external\loan_data.csv"
     params_filepath = r"D:\loan_mlops\params.yaml"
-    raw_data_path = os.path.join("data","processed")
+    raw_data_path = os.path.join("data","raw")
 # data_path = os.path.join("data","raw")
     try:
         data = load_data(data_filepath)

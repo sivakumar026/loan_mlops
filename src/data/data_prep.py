@@ -1,197 +1,63 @@
-import pandas as pd
-import numpy as np
-import os
+import pandas as pd,numpy as np,os
 from sklearn.preprocessing import LabelEncoder
 
 
-def load_data(filepath: str) -> pd.DataFrame:
+def load_data(filepath:str):
+    try:return pd.read_csv(filepath)
+    except Exception as e:raise Exception(f"Error loading data from {filepath}: {e}")
 
+
+def preprocess_data(df:pd.DataFrame):
     try:
+        if "Loan_ID" in df.columns:df=df.drop(columns=["Loan_ID"])
 
-        return pd.read_csv(filepath)
-
-    except Exception as e:
-
-        raise Exception(
-            f"Error loading data from {filepath}: {e}"
-        )
-
-
-def preprocess_data(
-    df: pd.DataFrame
-) -> pd.DataFrame:
-
-    try:
-
-        # =========================
-        # Drop Loan_ID Column
-        # =========================
-
-        if "Loan_ID" in df.columns:
-
-            df = df.drop(
-                columns=["Loan_ID"]
-            )
-
-        # =========================
-        # Handle Missing Values
-        # =========================
-
-        for column in df.columns:
-
-            # Numerical Columns
-            if df[column].dtype != "object":
-
-                if df[column].isnull().any():
-
-                    mean_value = df[column].mean()
-
-                    df[column] = df[column].fillna(
-                        mean_value
-                    )
-
-            # Categorical Columns
+        for col in df.columns:
+            if df[col].dtype!="object":
+                if df[col].isnull().any():df[col]=df[col].fillna(df[col].mean())
             else:
+                if df[col].isnull().any():df[col]=df[col].fillna(df[col].mode()[0])
 
-                if df[column].isnull().any():
-
-                    mode_value = df[column].mode()[0]
-
-                    df[column] = df[column].fillna(
-                        mode_value
-                    )
-
-        # =========================
-        # Encode Categorical Columns
-        # =========================
-
-        label_encoder = LabelEncoder()
-
-        categorical_columns = df.select_dtypes(
-            include=["object"]
-        ).columns
-
-        for column in categorical_columns:
-
-            df[column] = label_encoder.fit_transform(
-                df[column]
-            )
+        le=LabelEncoder()
+        for col in df.select_dtypes(include=["object"]).columns:
+            df[col]=le.fit_transform(df[col])
 
         print("Preprocessing completed")
-
         return df
 
-    except Exception as e:
-
-        raise Exception(
-            f"Error during preprocessing: {e}"
-        )
+    except Exception as e:raise Exception(f"Error during preprocessing: {e}")
 
 
-def save_data(
-    df: pd.DataFrame,
-    filepath: str
-) -> None:
-
+def save_data(df:pd.DataFrame,filepath:str):
     try:
-
-        df.to_csv(
-            filepath,
-            index=False
-        )
-
+        df.to_csv(filepath,index=False)
         print(f"Data saved to {filepath}")
-
     except Exception as e:
-
-        raise Exception(
-            f"Error saving data to {filepath}: {e}"
-        )
+        raise Exception(f"Error saving data: {e}")
 
 
 def main():
-
     try:
+        raw_path="./data/raw"
+        processed_path="./data/processed"
 
-        # =========================
-        # Paths
-        # =========================
+        os.makedirs(processed_path,exist_ok=True)
 
-        raw_data_path = "./data/processed"
-
-        processed_data_path = "./data/processed"
-
-        # =========================
-        # Create Folder
-        # =========================
-
-        os.makedirs(
-            processed_data_path,
-            exist_ok=True
-        )
-
-        # =========================
-        # Load Data
-        # =========================
-
-        train_data = load_data(
-            os.path.join(
-                raw_data_path,
-                "train.csv"
-            )
-        )
-
-        test_data = load_data(
-            os.path.join(
-                raw_data_path,
-                "test.csv"
-            )
-        )
+        train_df=load_data(f"{raw_path}/train.csv")
+        test_df=load_data(f"{raw_path}/test.csv")
 
         print("Data loaded successfully")
 
-        # =========================
-        # Preprocess Data
-        # =========================
+        train_processed=preprocess_data(train_df)
+        test_processed=preprocess_data(test_df)
 
-        train_processed_data = preprocess_data(
-            train_data
-        )
-
-        test_processed_data = preprocess_data(
-            test_data
-        )
-
-        print("Missing values handled")
-
-        # =========================
-        # Save Processed Data
-        # =========================
-
-        save_data(
-            train_processed_data,
-            os.path.join(
-                processed_data_path,
-                "train_processed.csv"
-            )
-        )
-
-        save_data(
-            test_processed_data,
-            os.path.join(
-                processed_data_path,
-                "test_processed.csv"
-            )
-        )
+        save_data(train_processed,f"{processed_path}/train_processed.csv")
+        save_data(test_processed,f"{processed_path}/test_processed.csv")
 
         print("Data preprocessing completed")
 
     except Exception as e:
-
-        raise Exception(
-            f"An error occurred: {e}"
-        )
+        raise Exception(f"An error occurred: {e}")
 
 
-if __name__ == "__main__":
+if __name__=="__main__":
     main()
