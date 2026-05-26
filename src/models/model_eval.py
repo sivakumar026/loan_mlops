@@ -1,4 +1,4 @@
-import os
+
 import json
 import yaml
 import joblib
@@ -11,15 +11,32 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import accuracy_score,precision_score,recall_score,f1_score,confusion_matrix
 
 
-dagshub.init(
-    repo_owner="sivakumar026",
-    repo_name="loan_mlops",
-    mlflow=True
-)
+# dagshub.init(
+#     repo_owner="sivakumar026",
+#     repo_name="loan_mlops",
+#     mlflow=True
+# )
 
-mlflow.set_tracking_uri(
-    "https://dagshub.com/sivakumar026/loan_mlops.mlflow"
-)
+# mlflow.set_tracking_uri(
+#     "https://dagshub.com/sivakumar026/loan_mlops.mlflow"
+# )
+
+import os
+# Load DagsHub token from environment variables
+dagshub_token = os.getenv("DAGSHUB_TOKEN")
+if not dagshub_token:
+    raise EnvironmentError("DAGSHUB_TOKEN environment variable is not set")
+
+os.environ["MLFLOW_TRACKING_USERNAME"] = dagshub_token
+os.environ["MLFLOW_TRACKING_PASSWORD"] = dagshub_token
+
+# DagsHub repository details
+dagshub_url = "https://dagshub.com"
+repo_owner="sivakumar026",
+repo_name="loan_mlops",
+mlflow.set_tracking_uri(f"{dagshub_url}/{repo_owner}/{repo_name}.mlflow")
+
+
 
 mlflow.set_experiment(
     "Loan_Model_Evaluation"
