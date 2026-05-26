@@ -32,9 +32,7 @@ def load_data(data_path:str)->pd.DataFrame:
         raise Exception(f"Error loading data from {data_path}: {e}")
 
 
-# =========================
-# Prepare Data
-# =========================
+
 def prepare_data(data:pd.DataFrame):
     try:
         X=data.drop(columns=["Loan_Status"],axis=1)
