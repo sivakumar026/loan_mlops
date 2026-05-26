@@ -24,7 +24,8 @@ def load_params(params_path:str):
 
 
 # Load Data
-# =========================
+
+
 def load_data(data_path:str)->pd.DataFrame:
     try:
         return pd.read_csv(data_path)
