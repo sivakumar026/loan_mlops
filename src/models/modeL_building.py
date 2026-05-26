@@ -24,7 +24,6 @@ def load_params(params_path:str):
         raise Exception(f"Error loading parameters from {params_path}: {e}")
 
 
-# =========================
 # Load Data
 # =========================
 def load_data(data_path:str)->pd.DataFrame:
