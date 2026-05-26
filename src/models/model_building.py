@@ -42,7 +42,6 @@ def prepare_data(data:pd.DataFrame):
         raise Exception(f"Error preparing data: {e}")
 
 
-# =========================
 # Train Model
 # =========================
 def train_model(X_train,y_train,params):
