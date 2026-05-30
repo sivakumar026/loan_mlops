@@ -82,22 +82,41 @@ def main():
         data_path="./data/processed/train_processed.csv"
         model_name="models/model.pkl"
 
-        dagshub.init(
-            repo_owner="sivakumar026",
-            repo_name="loan_mlops",
-            mlflow=True
-        )
+        # dagshub.init(
+        #     repo_owner="sivakumar026",
+        #     repo_name="loan_mlops",
+        #     mlflow=True
+        # )
 
-        mlflow.set_tracking_uri(
-            "https://dagshub.com/sivakumar026/loan_mlops.mlflow"
-        )
+        # mlflow.set_tracking_uri(
+        #     "https://dagshub.com/sivakumar026/loan_mlops.mlflow"
+        # )
 
-        params=load_params(params_path)
+        # params=load_params(params_path)
+
+        # mlflow.set_experiment(
+        #     "GradientBoosting Production Model"
+        # )
+        import os
+        # Load DagsHub token from environment 
+        dagshub_token = os.getenv("DAGSHUB_TOKEN")
+        if not dagshub_token:
+            raise EnvironmentError("DAGSHUB_TOKEN environment variable is not set")
+
+        os.environ["MLFLOW_TRACKING_USERNAME"] = dagshub_token
+        os.environ["MLFLOW_TRACKING_PASSWORD"] = dagshub_token
+
+        # DagsHub repository details
+        dagshub_url = "https://dagshub.com"
+        repo_owner="sivakumar026",
+        repo_name="loan_mlops",
+        mlflow.set_tracking_uri(f"{dagshub_url}/{repo_owner}/{repo_name}.mlflow")
+
+
 
         mlflow.set_experiment(
             "GradientBoosting Production Model"
         )
-
         train_data=load_data(data_path)
         print("Dataset loaded successfully")
 
